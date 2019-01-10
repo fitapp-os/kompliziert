@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:id="@+id/llBubble"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <ImageView android:src="@drawable/ic_bubble_tip_top" android:layout_width="28dp"
+               android:layout_height="wrap_content"
+               android:adjustViewBounds="true"
+               android:id="@+id/ivBubbleTipTop"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:id="@+id/llBubbleContents" android:orientation="vertical"
+                  android:gravity="center"
+                  android:padding="34dp"
+                  android:layout_marginStart="16dp"
+                  android:layout_marginEnd="16dp"
+                  android:background="@drawable/hint_default_background">
+
+        <TextView android:text="$MOTIVATE EACH OTHER!" android:layout_width="match_parent"
+                  android:layout_marginBottom="4dp"
+                  android:layout_height="wrap_content" android:gravity="center"
+                  style="@style/HintTitleText"/>
+
+        <TextView android:text="$Cheering on someone's activity is so cool. Wow. Amazing. Have a nice day!"
+                  android:layout_width="match_parent"
+                  android:layout_marginTop="4dp"
+                  style="@style/HintMessageText"
+                  android:layout_height="wrap_content" android:gravity="center"/>
+
+    </LinearLayout>
+
+    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+               android:id="@+id/ivBubbleTipBottom"/>
+
+</LinearLayout>
