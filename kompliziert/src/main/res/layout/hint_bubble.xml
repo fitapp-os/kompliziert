@@ -5,7 +5,8 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
 
-    <ImageView android:src="@drawable/ic_bubble_tip_top" android:layout_width="28dp"
+    <ImageView android:src="@drawable/ic_bubble_tip_top"
+               android:layout_width="28dp"
                android:layout_height="wrap_content"
                android:adjustViewBounds="true"
                android:id="@+id/ivBubbleTipTop"/>
@@ -31,7 +32,10 @@
 
     </LinearLayout>
 
-    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+    <ImageView android:src="@drawable/ic_bubble_tip_bottom"
+               android:layout_width="28dp"
+               android:layout_height="wrap_content"
+               android:adjustViewBounds="true"
                android:id="@+id/ivBubbleTipBottom"/>
 
 </LinearLayout>
