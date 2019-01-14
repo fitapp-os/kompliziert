@@ -40,3 +40,17 @@ The [demo](demo) module shows an example of how *Kompliziert* works.
 
 ## Installation
 
+In your `build.gradle` add the following repository:
+
+```groovy
+    maven { 
+        url 'https://dl.bintray.com/fitapp/maven' 
+    }
+```
+And then include the dependency:
+
+```groovy
+    dependencies {
+        implementation 'info.fitapp:kompliziert:1.0'
+    }
+```
