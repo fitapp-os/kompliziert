@@ -79,7 +79,10 @@ class Hint(
             )
         }
 
-        val middlePosition: Int = hintOverlay!!.measuredHeight / 2
+        val totalHeight = hintOverlay!!.measuredHeight
+        val totalWidth = hintOverlay!!.measuredWidth
+
+        val middlePosition: Int = totalHeight / 2
         val attachToBottom = anchorCoordinates.y <= middlePosition
 
         /*
@@ -92,11 +95,11 @@ class Hint(
         bubbleContainer = if (hintIconContainer != null) {
             placeBubbleRelativeToIcon(hintIconContainer, attachToBottom)
         } else {
-            placeBubbleRelativeToCoordinates(anchorCoordinates, hintOverlay!!.measuredHeight, attachToBottom)
+            placeBubbleRelativeToCoordinates(anchorCoordinates, totalHeight, attachToBottom)
         }
 
         bubbleContainer?.let {
-            placeBubbleTip(anchorCoordinates, it, attachToBottom)
+            placeBubbleTip(anchorCoordinates, it, totalWidth, attachToBottom)
             applyBubbleTexts(it)
         }
 
@@ -188,15 +191,20 @@ class Hint(
     private fun placeBubbleTip(
         coordinates: AnchorCoordinates,
         bubbleContainer: LinearLayout,
+        totalWidth: Int,
         attachToBottom: Boolean
     ) {
 
-        val bubblePointerWidth =
-            activity.resources.getDimensionPixelSize(R.dimen.hint_bubble_tip_width).toFloat()
+        val bubblePointerWidth = activity.resources.getDimensionPixelSize(R.dimen.hint_bubble_tip_width).toFloat()
+        val minMargin = bubblePointerWidth.toInt()
+        val maxMargin = (totalWidth - bubblePointerWidth).toInt()
+        val suggestedMargin = (coordinates.x - (bubblePointerWidth / 2)).toInt()
+        val margin = Math.min(maxMargin, Math.max(minMargin, suggestedMargin))
+
         val pointerLayout =
             bubbleContainer.findViewById<ImageView>(if (attachToBottom) R.id.ivBubbleTipTop else R.id.ivBubbleTipBottom)
         val pointerLayoutParams = pointerLayout.layoutParams as LinearLayout.LayoutParams
-        pointerLayoutParams.marginStart = (coordinates.x - (bubblePointerWidth / 2)).toInt()
+        pointerLayoutParams.marginStart = margin
 
         // Hide the pointer that is on the opposite side of the icon.
         bubbleContainer.findViewById<ImageView>(R.id.ivBubbleTipBottom).visibility =
