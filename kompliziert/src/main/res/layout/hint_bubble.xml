@@ -5,8 +5,8 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
 
-    <ImageView android:src="@drawable/ic_bubble_tip_top"
-               android:layout_width="28dp"
+    <ImageView android:src="@drawable/ic_hint_bubble_tip_top"
+               android:layout_width="@dimen/hint_bubble_tip_width"
                android:layout_height="wrap_content"
                android:adjustViewBounds="true"
                android:id="@+id/ivBubbleTipTop"/>
@@ -14,28 +14,29 @@
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                   android:id="@+id/llBubbleContents" android:orientation="vertical"
                   android:gravity="center"
-                  android:padding="34dp"
-                  android:layout_marginStart="16dp"
-                  android:layout_marginEnd="16dp"
+                  android:padding="@dimen/hint_bubble_padding"
+                  android:layout_marginStart="@dimen/hint_bubble_margin_sides"
+                  android:layout_marginEnd="@dimen/hint_bubble_margin_sides"
                   android:background="@drawable/hint_default_background">
 
         <TextView tools:text="Attention please!" android:layout_width="match_parent"
                   android:id="@+id/tvHintTitle"
-                  android:layout_marginBottom="4dp"
+                  android:layout_marginBottom="@dimen/hint_bubble_element_spacing"
                   android:layout_height="wrap_content" android:gravity="center"
                   style="@style/HintTitleText"/>
 
         <TextView tools:text="There will be a power cut tomorrow morning between 7 and 9 am."
                   android:layout_width="match_parent"
-                  android:layout_marginTop="4dp"
+                  android:layout_marginTop="@dimen/hint_bubble_element_spacing"
                   style="@style/HintMessageText"
                   android:id="@+id/tvHintMessage"
                   android:layout_height="wrap_content" android:gravity="center"/>
 
     </LinearLayout>
 
-    <ImageView android:src="@drawable/ic_bubble_tip_bottom"
-               android:layout_width="28dp"
+    <ImageView android:src="@drawable/ic_hint_bubble_tip_top"
+               android:layout_width="@dimen/hint_bubble_tip_width"
+               android:rotation="180"
                android:layout_height="wrap_content"
                android:adjustViewBounds="true"
                android:id="@+id/ivBubbleTipBottom"/>
