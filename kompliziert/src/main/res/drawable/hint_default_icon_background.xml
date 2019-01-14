@@ -4,7 +4,7 @@
         <shape android:shape="oval">
             <gradient android:endColor="@color/hintIconBackgroundGradientStart"
                       android:startColor="@color/hintIconBackgroundGradientEnd"
-                      android:angle="45"/>
+                      android:angle="135"/>
         </shape>
     </item>
 </selector>

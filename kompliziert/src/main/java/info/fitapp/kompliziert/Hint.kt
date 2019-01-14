@@ -6,6 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.*
 import java.util.*
 import kotlin.math.roundToInt
@@ -65,7 +68,7 @@ class Hint(
 
         val attachToBottom = centerTop <= middlePosition
 
-        val iconDimensPx = 50f * activity.resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT
+        val iconDimensPx = 66f * activity.resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT
 
         /*
          * Position the hint icon.
@@ -127,9 +130,32 @@ class Hint(
         // Apply texts.
         bubbleLayout.findViewById<TextView>(R.id.tvHintTitle).text = title
         bubbleLayout.findViewById<TextView>(R.id.tvHintMessage).text = message
+
+        // Actually show the UI.
+        val fadeIn = AlphaAnimation(0f, 1f)
+        fadeIn.interpolator = AccelerateInterpolator()
+        fadeIn.startOffset = 0
+        fadeIn.duration = 400
+
+        fadeIn.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+
+            }
+
+            override fun onAnimationStart(animation: Animation?) {
+                hintOverlay?.visibility = View.VISIBLE
+            }
+
+        })
+
+        hintOverlay?.animation = fadeIn
+        hintOverlay?.startAnimation(fadeIn)
     }
 
-    private var isShowing = false
+    var isShowing = false
     private var hintOverlay: RelativeLayout? = null
 
     // TODO: Create overlay before call to show()?
@@ -151,7 +177,28 @@ class Hint(
         with(activity) {
             isShowing = false
             val rootLayout = findViewById<FrameLayout>(android.R.id.content)
-            rootLayout.removeView(rootLayout.findViewById(R.id.hintOverlay))
+            val hintOverlay: View = rootLayout.findViewById(R.id.hintOverlay)
+
+            val fadeOut = AlphaAnimation(1f, 0f)
+            fadeOut.interpolator = AccelerateInterpolator()
+            fadeOut.startOffset = 0
+            fadeOut.duration = 250
+
+            fadeOut.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationRepeat(animation: Animation?) {
+                }
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    rootLayout.removeView(hintOverlay)
+                }
+
+                override fun onAnimationStart(animation: Animation?) {
+                }
+
+            })
+
+            hintOverlay.animation = fadeOut
+            hintOverlay.startAnimation(fadeOut)
         }
     }
 
