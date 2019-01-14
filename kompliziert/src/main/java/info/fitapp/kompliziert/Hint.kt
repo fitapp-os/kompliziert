@@ -1,8 +1,9 @@
 package info.fitapp.kompliziert
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.app.Activity
-import android.util.DisplayMetrics
-import android.util.Log
+import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
@@ -10,7 +11,6 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.*
-import java.util.*
 import kotlin.math.roundToInt
 
 
@@ -19,22 +19,39 @@ class Hint(
     private val anchorView: View?,
     private val title: String?,
     private val message: String?,
-    private val iconResource: Int?
+    private val iconResource: Int?,
+    private val pulsate: Boolean = false
 ) : ViewTreeObserver.OnGlobalLayoutListener {
 
     companion object {
-        const val TAG = "Hint"
 
-        fun withData(activity: Activity, anchorView: View?, title: String, message: String, iconResource: Int?): Hint {
-            return Hint(activity, anchorView, title, message, iconResource)
+        fun withData(
+            activity: Activity,
+            anchorView: View?,
+            title: String,
+            message: String,
+            iconResource: Int?,
+            pulsate: Boolean = false
+        ): Hint {
+            return Hint(activity, anchorView, title, message, iconResource, pulsate)
         }
 
-        fun withData(activity: Activity, anchorView: View?, title: Int, message: Int, iconResource: Int?): Hint {
+        fun withData(
+            activity: Activity,
+            anchorView: View?,
+            title: Int,
+            message: Int,
+            iconResource: Int?,
+            pulsate: Boolean = false
+        ): Hint {
             with(activity) {
-                return Hint(this, anchorView, getString(title), getString(message), iconResource)
+                return Hint(this, anchorView, getString(title), getString(message), iconResource, pulsate)
             }
         }
     }
+
+    var isShowing = false
+    private var hintOverlay: RelativeLayout? = null
 
     override fun onGlobalLayout() {
         hintOverlay?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
@@ -53,22 +70,14 @@ class Hint(
 
             centerRight = anchorViewPosition[0] + anchorView.measuredWidth / 2
             centerTop = anchorViewPosition[1] + anchorView.measuredHeight / 2
-
-            Log.d(TAG, "Positioning hint with anchor view: " + Arrays.toString(anchorViewPosition))
-            Log.d(TAG, "Anchor measured dimens: " + anchorView.measuredWidth + "x" + anchorView.measuredHeight)
-            Log.d(TAG, "Anchor dimens: " + anchorView.width + "x" + anchorView.height)
-
         } else {
-            Log.d(TAG, "Centering the hint because there's no anchor view.")
             centerTop = hintOverlay!!.measuredHeight / 2
             centerRight = hintOverlay!!.measuredWidth / 2
         }
 
         val middlePosition: Int = hintOverlay!!.measuredHeight / 2
-
         val attachToBottom = centerTop <= middlePosition
-
-        val iconDimensPx = 66f * activity.resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT
+        val iconDimensPx = activity.resources.getDimensionPixelSize(R.dimen.hint_icon_dimen).toFloat()
 
         /*
          * Position the hint icon.
@@ -78,11 +87,8 @@ class Hint(
          */
 
         LayoutInflater.from(activity).inflate(R.layout.hint_icon, hintOverlay, true)
-        val hintIcon = hintOverlay!!.findViewById<ImageView>(R.id.ivHintIcon)
-        val hintIconLayoutParams = hintIcon.layoutParams as RelativeLayout.LayoutParams
-
-        // Set the icon resource.
-        hintIcon.setImageResource(iconResource!!)
+        val hintIconContainer = hintOverlay!!.findViewById<RelativeLayout>(R.id.rlHintIconContainer)
+        val hintIconContainerLayoutParams = hintIconContainer.layoutParams as RelativeLayout.LayoutParams
 
         // Calculate both margins.
         val topMargin = (centerTop - (iconDimensPx / 2)).roundToInt()
@@ -90,15 +96,33 @@ class Hint(
 
         // Position vertically.
         if (attachToBottom) {
-            hintIconLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
-            hintIconLayoutParams.topMargin = topMargin
+            hintIconContainerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+            hintIconContainerLayoutParams.topMargin = topMargin
         } else {
-            hintIconLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-            hintIconLayoutParams.bottomMargin = bottomMargin.roundToInt()
+            hintIconContainerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+            hintIconContainerLayoutParams.bottomMargin = bottomMargin.roundToInt()
         }
 
         // Position horizontally.
-        hintIconLayoutParams.leftMargin = (centerRight - iconDimensPx / 2).toInt()
+        hintIconContainerLayoutParams.leftMargin = (centerRight - iconDimensPx / 2).toInt()
+
+        // Set the icon resource.
+        val hintIcon = hintOverlay!!.findViewById<ImageView>(R.id.ivHintIcon)
+        hintIcon.setImageResource(iconResource!!)
+
+        // Pulsate
+        if (pulsate) {
+            val scaleDown = ObjectAnimator.ofPropertyValuesHolder(
+                hintIcon,
+                PropertyValuesHolder.ofFloat("scaleX", 1.2f),
+                PropertyValuesHolder.ofFloat("scaleY", 1.2f)
+            )
+            scaleDown.duration = 700
+            scaleDown.repeatCount = ObjectAnimator.INFINITE
+            scaleDown.repeatMode = ObjectAnimator.REVERSE
+            scaleDown.interpolator = FastOutSlowInInterpolator()
+            scaleDown.start()
+        }
 
         /*
          * Position the speech bubble either above or below the icon using RelativeLayout parameters.
@@ -109,13 +133,14 @@ class Hint(
         val bubbleLayoutParams = bubbleLayout.layoutParams as RelativeLayout.LayoutParams
 
         if (attachToBottom) {
-            bubbleLayoutParams.addRule(RelativeLayout.BELOW, hintIcon.id)
+            bubbleLayoutParams.addRule(RelativeLayout.BELOW, hintIconContainer.id)
         } else {
-            bubbleLayoutParams.addRule(RelativeLayout.ABOVE, hintIcon.id)
+            bubbleLayoutParams.addRule(RelativeLayout.ABOVE, hintIconContainer.id)
         }
 
         // Offset the speech bubble pointer.
-        val bubblePointerWidth = 28f * activity.resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT
+        val bubblePointerWidth =
+            activity.resources.getDimensionPixelSize(R.dimen.hint_bubble_tip_width).toFloat()
         val pointerLayout =
             hintOverlay!!.findViewById<ImageView>(if (attachToBottom) R.id.ivBubbleTipTop else R.id.ivBubbleTipBottom)
         val pointerLayoutParams = pointerLayout.layoutParams as LinearLayout.LayoutParams
@@ -154,12 +179,6 @@ class Hint(
         hintOverlay?.animation = fadeIn
         hintOverlay?.startAnimation(fadeIn)
     }
-
-    var isShowing = false
-    private var hintOverlay: RelativeLayout? = null
-
-    // TODO: Create overlay before call to show()?
-
 
     fun show() {
         with(activity) {

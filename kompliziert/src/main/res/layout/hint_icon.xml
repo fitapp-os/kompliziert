@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-           android:id="@+id/ivHintIcon"
-           android:layout_width="@dimen/hint_icon_dimen"
-           android:layout_height="@dimen/hint_icon_dimen"
-           android:layout_margin="@dimen/hint_icon_margin"
-           android:padding="@dimen/hint_icon_padding"
-           android:scaleType="fitCenter"
-           android:background="@drawable/hint_default_icon_background"
-           android:src="@drawable/ic_hint_default_icon_white_32dp"/>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rlHintIconContainer"
+        android:layout_margin="@dimen/hint_icon_margin"
+        android:layout_width="@dimen/hint_icon_dimen"
+        android:layout_height="@dimen/hint_icon_dimen">
+
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/hint_default_icon_background"/>
+
+    <ImageView
+            android:id="@+id/ivHintIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/hint_icon_padding"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_hint_default_icon_white_32dp"/>
+
+</RelativeLayout>

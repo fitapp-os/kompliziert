@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="hint_bubble_margin_sides">12dp</dimen>
+    <dimen name="hint_bubble_margin_sides">10dp</dimen>
     <dimen name="hint_bubble_padding">34dp</dimen>
     <dimen name="hint_bubble_element_spacing">4dp</dimen>
     <dimen name="hint_bubble_tip_width">26dp</dimen>
