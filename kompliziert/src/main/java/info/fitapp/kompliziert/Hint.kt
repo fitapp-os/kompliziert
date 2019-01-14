@@ -60,101 +60,42 @@ class Hint(
          * Calculate the screen position.
          * If there is no anchorView we will center the hint on the screen.
          */
-
-        val centerTop: Int
-        val centerRight: Int
-
-        if (anchorView != null) {
+        val anchorCoordinates = if (anchorView != null) {
             val anchorViewPosition = IntArray(2)
             anchorView.getLocationOnScreen(anchorViewPosition)
 
-            centerRight = anchorViewPosition[0] + anchorView.measuredWidth / 2
-            centerTop = anchorViewPosition[1] + anchorView.measuredHeight / 2
+            AnchorCoordinates(
+                anchorViewPosition[0] + anchorView.measuredWidth / 2,
+                anchorViewPosition[1] + anchorView.measuredHeight / 2
+            )
         } else {
-            centerTop = hintOverlay!!.measuredHeight / 2
-            centerRight = hintOverlay!!.measuredWidth / 2
+            AnchorCoordinates(
+                hintOverlay!!.measuredWidth / 2,
+                hintOverlay!!.measuredHeight / 2
+            )
         }
 
         val middlePosition: Int = hintOverlay!!.measuredHeight / 2
-        val attachToBottom = centerTop <= middlePosition
-        val iconDimensPx = activity.resources.getDimensionPixelSize(R.dimen.hint_icon_dimen).toFloat()
+        val attachToBottom = anchorCoordinates.y <= middlePosition
 
         /*
-         * Position the hint icon.
-         * If the bubble will be attached to the bottom, the icon needs to be aligned to the top and positioned with
-         * a top margin. Otherwise the icon needs to be aligned to the parent's bottom and positioned with a bottom
-         * margin.
+         * Place the hint icon on the screen.
+         * If an icon is available, the result is the containing layout.
          */
+        val hintIconContainer = placeIconOnScreen(anchorCoordinates, attachToBottom)
+        val bubbleContainer: LinearLayout?
 
-        LayoutInflater.from(activity).inflate(R.layout.hint_icon, hintOverlay, true)
-        val hintIconContainer = hintOverlay!!.findViewById<RelativeLayout>(R.id.rlHintIconContainer)
-        val hintIconContainerLayoutParams = hintIconContainer.layoutParams as RelativeLayout.LayoutParams
-
-        // Calculate both margins.
-        val topMargin = (centerTop - (iconDimensPx / 2)).roundToInt()
-        val bottomMargin = hintOverlay!!.measuredHeight - centerTop - iconDimensPx / 2
-
-        // Position vertically.
-        if (attachToBottom) {
-            hintIconContainerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
-            hintIconContainerLayoutParams.topMargin = topMargin
+        bubbleContainer = if (hintIconContainer != null) {
+            placeBubbleRelativeToIcon(hintIconContainer, attachToBottom)
         } else {
-            hintIconContainerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-            hintIconContainerLayoutParams.bottomMargin = bottomMargin.roundToInt()
+            placeBubbleRelativeToCoordinates(anchorCoordinates, hintOverlay!!.measuredHeight, attachToBottom)
         }
 
-        // Position horizontally.
-        hintIconContainerLayoutParams.leftMargin = (centerRight - iconDimensPx / 2).toInt()
-
-        // Set the icon resource.
-        val hintIcon = hintOverlay!!.findViewById<ImageView>(R.id.ivHintIcon)
-        hintIcon.setImageResource(iconResource!!)
-
-        // Pulsate
-        if (pulsate) {
-            val scaleDown = ObjectAnimator.ofPropertyValuesHolder(
-                hintIcon,
-                PropertyValuesHolder.ofFloat("scaleX", 1.2f),
-                PropertyValuesHolder.ofFloat("scaleY", 1.2f)
-            )
-            scaleDown.duration = 700
-            scaleDown.repeatCount = ObjectAnimator.INFINITE
-            scaleDown.repeatMode = ObjectAnimator.REVERSE
-            scaleDown.interpolator = FastOutSlowInInterpolator()
-            scaleDown.start()
+        bubbleContainer?.let {
+            placeBubbleTip(anchorCoordinates, it, attachToBottom)
+            applyBubbleTexts(it)
         }
 
-        /*
-         * Position the speech bubble either above or below the icon using RelativeLayout parameters.
-         */
-
-        LayoutInflater.from(activity).inflate(R.layout.hint_bubble, hintOverlay, true)
-        val bubbleLayout = hintOverlay!!.findViewById<LinearLayout>(R.id.llBubble)
-        val bubbleLayoutParams = bubbleLayout.layoutParams as RelativeLayout.LayoutParams
-
-        if (attachToBottom) {
-            bubbleLayoutParams.addRule(RelativeLayout.BELOW, hintIconContainer.id)
-        } else {
-            bubbleLayoutParams.addRule(RelativeLayout.ABOVE, hintIconContainer.id)
-        }
-
-        // Offset the speech bubble pointer.
-        val bubblePointerWidth =
-            activity.resources.getDimensionPixelSize(R.dimen.hint_bubble_tip_width).toFloat()
-        val pointerLayout =
-            hintOverlay!!.findViewById<ImageView>(if (attachToBottom) R.id.ivBubbleTipTop else R.id.ivBubbleTipBottom)
-        val pointerLayoutParams = pointerLayout.layoutParams as LinearLayout.LayoutParams
-        pointerLayoutParams.marginStart = (centerRight - (bubblePointerWidth / 2)).toInt()
-
-        // Hide the pointer that is on the opposite side of the icon.
-        hintOverlay!!.findViewById<ImageView>(R.id.ivBubbleTipBottom).visibility =
-                if (attachToBottom) View.GONE else View.VISIBLE
-        hintOverlay!!.findViewById<ImageView>(R.id.ivBubbleTipTop).visibility =
-                if (attachToBottom) View.VISIBLE else View.GONE
-
-        // Apply texts.
-        bubbleLayout.findViewById<TextView>(R.id.tvHintTitle).text = title
-        bubbleLayout.findViewById<TextView>(R.id.tvHintMessage).text = message
 
         // Actually show the UI.
         val fadeIn = AlphaAnimation(0f, 1f)
@@ -178,6 +119,141 @@ class Hint(
 
         hintOverlay?.animation = fadeIn
         hintOverlay?.startAnimation(fadeIn)
+    }
+
+
+    /*
+     * Position the hint icon.
+     * If the bubble will be attached to the bottom, the icon needs to be aligned to the top and positioned with
+     * a top margin. Otherwise the icon needs to be aligned to the parent's bottom and positioned with a bottom
+     * margin.
+     */
+    private fun placeIconOnScreen(coordinates: AnchorCoordinates, attachToBottom: Boolean): RelativeLayout? {
+        if (iconResource == null) return null
+
+        hintOverlay?.let {
+            val iconDimensPx = activity.resources.getDimensionPixelSize(R.dimen.hint_icon_dimen).toFloat()
+
+            LayoutInflater.from(activity).inflate(R.layout.hint_icon, it, true)
+            val hintIconContainer = it.findViewById<RelativeLayout>(R.id.rlHintIconContainer)
+            val hintIconContainerLayoutParams = hintIconContainer.layoutParams as RelativeLayout.LayoutParams
+
+            // Calculate both margins.
+            val topMargin = (coordinates.y - (iconDimensPx / 2)).roundToInt()
+            val bottomMargin = it.measuredHeight - coordinates.y - iconDimensPx / 2
+
+            // Position vertically.
+            if (attachToBottom) {
+                hintIconContainerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                hintIconContainerLayoutParams.topMargin = topMargin
+            } else {
+                hintIconContainerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                hintIconContainerLayoutParams.bottomMargin = bottomMargin.roundToInt()
+            }
+
+            // Position horizontally.
+            hintIconContainerLayoutParams.leftMargin = (coordinates.x - iconDimensPx / 2).toInt()
+
+            // Set the icon resource.
+            val hintIcon = it.findViewById<ImageView>(R.id.ivHintIcon)
+            hintIcon.setImageResource(iconResource)
+
+            // Pulsate
+            if (pulsate) {
+                pulsateView(hintIcon)
+            }
+
+            return hintIconContainer
+        }
+        return null
+    }
+
+    private fun pulsateView(view: View) {
+        val scaleDown = ObjectAnimator.ofPropertyValuesHolder(
+            view,
+            PropertyValuesHolder.ofFloat("scaleX", 1.2f),
+            PropertyValuesHolder.ofFloat("scaleY", 1.2f)
+        )
+        scaleDown.duration = 700
+        scaleDown.repeatCount = ObjectAnimator.INFINITE
+        scaleDown.repeatMode = ObjectAnimator.REVERSE
+        scaleDown.interpolator = FastOutSlowInInterpolator()
+        scaleDown.start()
+    }
+
+    private fun placeBubbleTip(
+        coordinates: AnchorCoordinates,
+        bubbleContainer: LinearLayout,
+        attachToBottom: Boolean
+    ) {
+
+        val bubblePointerWidth =
+            activity.resources.getDimensionPixelSize(R.dimen.hint_bubble_tip_width).toFloat()
+        val pointerLayout =
+            bubbleContainer.findViewById<ImageView>(if (attachToBottom) R.id.ivBubbleTipTop else R.id.ivBubbleTipBottom)
+        val pointerLayoutParams = pointerLayout.layoutParams as LinearLayout.LayoutParams
+        pointerLayoutParams.marginStart = (coordinates.x - (bubblePointerWidth / 2)).toInt()
+
+        // Hide the pointer that is on the opposite side of the icon.
+        bubbleContainer.findViewById<ImageView>(R.id.ivBubbleTipBottom).visibility =
+                if (attachToBottom) View.GONE else View.VISIBLE
+        bubbleContainer.findViewById<ImageView>(R.id.ivBubbleTipTop).visibility =
+                if (attachToBottom) View.VISIBLE else View.GONE
+
+    }
+
+    private fun placeBubbleRelativeToIcon(
+        iconContainer: RelativeLayout,
+        attachToBottom: Boolean
+    ): LinearLayout? {
+        hintOverlay?.let {
+
+            LayoutInflater.from(activity).inflate(R.layout.hint_bubble, hintOverlay, true)
+            val bubbleLayout = it.findViewById<LinearLayout>(R.id.llBubble)
+            val bubbleLayoutParams = bubbleLayout.layoutParams as RelativeLayout.LayoutParams
+
+            if (attachToBottom) {
+                bubbleLayoutParams.addRule(RelativeLayout.BELOW, iconContainer.id)
+            } else {
+                bubbleLayoutParams.addRule(RelativeLayout.ABOVE, iconContainer.id)
+            }
+
+
+
+            return bubbleLayout
+        }
+
+        return null
+    }
+
+    private fun placeBubbleRelativeToCoordinates(
+        coordinates: AnchorCoordinates,
+        totalHeight: Int,
+        attachToBottom: Boolean
+    ): LinearLayout? {
+        hintOverlay?.let {
+
+            LayoutInflater.from(activity).inflate(R.layout.hint_bubble, hintOverlay, true)
+            val bubbleLayout = it.findViewById<LinearLayout>(R.id.llBubble)
+            val bubbleLayoutParams = bubbleLayout.layoutParams as RelativeLayout.LayoutParams
+
+            if (attachToBottom) {
+                bubbleLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                bubbleLayoutParams.topMargin = coordinates.y
+            } else {
+                bubbleLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                bubbleLayoutParams.bottomMargin = totalHeight - coordinates.y
+            }
+
+            return bubbleLayout
+        }
+
+        return null
+    }
+
+    private fun applyBubbleTexts(container: View) {
+        container.findViewById<TextView>(R.id.tvHintTitle).text = title
+        container.findViewById<TextView>(R.id.tvHintMessage).text = message
     }
 
     fun show() {
