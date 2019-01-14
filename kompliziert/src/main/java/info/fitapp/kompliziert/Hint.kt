@@ -6,18 +6,31 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
+import android.widget.*
 import java.util.*
 import kotlin.math.roundToInt
 
 
-class Hint(private val activity: Activity, private val anchorView: View?) : ViewTreeObserver.OnGlobalLayoutListener {
+class Hint(
+    private val activity: Activity,
+    private val anchorView: View?,
+    private val title: String?,
+    private val message: String?,
+    private val iconResource: Int?
+) : ViewTreeObserver.OnGlobalLayoutListener {
 
     companion object {
         const val TAG = "Hint"
+
+        fun withData(activity: Activity, anchorView: View?, title: String, message: String, iconResource: Int?): Hint {
+            return Hint(activity, anchorView, title, message, iconResource)
+        }
+
+        fun withData(activity: Activity, anchorView: View?, title: Int, message: Int, iconResource: Int?): Hint {
+            with(activity) {
+                return Hint(this, anchorView, getString(title), getString(message), iconResource)
+            }
+        }
     }
 
     override fun onGlobalLayout() {
@@ -65,6 +78,9 @@ class Hint(private val activity: Activity, private val anchorView: View?) : View
         val hintIcon = hintOverlay!!.findViewById<ImageView>(R.id.ivHintIcon)
         val hintIconLayoutParams = hintIcon.layoutParams as RelativeLayout.LayoutParams
 
+        // Set the icon resource.
+        hintIcon.setImageResource(iconResource!!)
+
         // Calculate both margins.
         val topMargin = (centerTop - (iconDimensPx / 2)).roundToInt()
         val bottomMargin = hintOverlay!!.measuredHeight - centerTop - iconDimensPx / 2
@@ -107,6 +123,10 @@ class Hint(private val activity: Activity, private val anchorView: View?) : View
                 if (attachToBottom) View.GONE else View.VISIBLE
         hintOverlay!!.findViewById<ImageView>(R.id.ivBubbleTipTop).visibility =
                 if (attachToBottom) View.VISIBLE else View.GONE
+
+        // Apply texts.
+        bubbleLayout.findViewById<TextView>(R.id.tvHintTitle).text = title
+        bubbleLayout.findViewById<TextView>(R.id.tvHintMessage).text = message
     }
 
     private var isShowing = false

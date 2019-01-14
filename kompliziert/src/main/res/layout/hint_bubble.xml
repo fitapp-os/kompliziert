@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical"
               android:id="@+id/llBubble"
               android:layout_width="match_parent"
@@ -19,15 +19,17 @@
                   android:layout_marginEnd="16dp"
                   android:background="@drawable/hint_default_background">
 
-        <TextView android:text="$MOTIVATE EACH OTHER!" android:layout_width="match_parent"
+        <TextView tools:text="Attention please!" android:layout_width="match_parent"
+                  android:id="@+id/tvHintTitle"
                   android:layout_marginBottom="4dp"
                   android:layout_height="wrap_content" android:gravity="center"
                   style="@style/HintTitleText"/>
 
-        <TextView android:text="$Cheering on someone's activity is so cool. Wow. Amazing. Have a nice day!"
+        <TextView tools:text="There will be a power cut tomorrow morning between 7 and 9 am."
                   android:layout_width="match_parent"
                   android:layout_marginTop="4dp"
                   style="@style/HintMessageText"
+                  android:id="@+id/tvHintMessage"
                   android:layout_height="wrap_content" android:gravity="center"/>
 
     </LinearLayout>
