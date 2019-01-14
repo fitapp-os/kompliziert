@@ -2,6 +2,7 @@ package info.fitapp.kompliziert
 
 import android.app.Activity
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
@@ -9,21 +10,47 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import java.util.*
 import kotlin.math.roundToInt
 
 
-class Hint(private val activity: Activity) : ViewTreeObserver.OnGlobalLayoutListener {
+class Hint(private val activity: Activity, private val anchorView: View?) : ViewTreeObserver.OnGlobalLayoutListener {
+
+    companion object {
+        const val TAG = "Hint"
+    }
 
     override fun onGlobalLayout() {
         hintOverlay?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
 
-        // Now add an icon and center it exactly
-        val centerTop: Int = hintOverlay!!.measuredHeight / 2 + 300
-        val centerRight: Int = hintOverlay!!.measuredWidth / 2 + 200
+        /*
+         * Calculate the screen position.
+         * If there is no anchorView we will center the hint on the screen.
+         */
 
-        val midHeight: Int = hintOverlay!!.measuredHeight / 2
+        val centerTop: Int
+        val centerRight: Int
 
-        val attachToBottom = centerTop <= midHeight
+        if (anchorView != null) {
+            val anchorViewPosition = IntArray(2)
+            anchorView.getLocationOnScreen(anchorViewPosition)
+
+            centerRight = anchorViewPosition[0] + anchorView.measuredWidth / 2
+            centerTop = anchorViewPosition[1] + anchorView.measuredHeight / 2
+
+            Log.d(TAG, "Positioning hint with anchor view: " + Arrays.toString(anchorViewPosition))
+            Log.d(TAG, "Anchor measured dimens: " + anchorView.measuredWidth + "x" + anchorView.measuredHeight)
+            Log.d(TAG, "Anchor dimens: " + anchorView.width + "x" + anchorView.height)
+
+        } else {
+            Log.d(TAG, "Centering the hint because there's no anchor view.")
+            centerTop = hintOverlay!!.measuredHeight / 2
+            centerRight = hintOverlay!!.measuredWidth / 2
+        }
+
+        val middlePosition: Int = hintOverlay!!.measuredHeight / 2
+
+        val attachToBottom = centerTop <= middlePosition
 
         val iconDimensPx = 50f * activity.resources.displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT
 
