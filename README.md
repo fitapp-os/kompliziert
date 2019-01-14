@@ -6,7 +6,7 @@ can immediately understand them. The second best solution is to use *Kompliziert
 ## Hints
 Hints are overlays that are positioned on the UI. A hint consists of an optional icon, a title and a message.
 
-![Screenshot](wiki/screenshot.png "Screenshot")
+![Screenshot](wiki/screenshot.png =250x "Screenshot")
 
 ## Usage
 You can create a hint using its constructor or a small convenience method:
