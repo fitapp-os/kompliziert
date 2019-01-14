@@ -197,7 +197,7 @@ class Hint(
 
         val bubblePointerWidth = activity.resources.getDimensionPixelSize(R.dimen.hint_bubble_tip_width).toFloat()
         val minMargin = bubblePointerWidth.toInt()
-        val maxMargin = (totalWidth - bubblePointerWidth).toInt()
+        val maxMargin = (totalWidth - 2 * bubblePointerWidth).toInt()
         val suggestedMargin = (coordinates.x - (bubblePointerWidth / 2)).toInt()
         val margin = Math.min(maxMargin, Math.max(minMargin, suggestedMargin))
 
