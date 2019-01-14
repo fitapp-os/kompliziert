@@ -51,6 +51,8 @@ class Hint(
     }
 
     var isShowing = false
+    var customAnchor: AnchorCoordinates? = null
+
     private var hintOverlay: RelativeLayout? = null
 
     override fun onGlobalLayout() {
@@ -60,16 +62,18 @@ class Hint(
          * Calculate the screen position.
          * If there is no anchorView we will center the hint on the screen.
          */
-        val anchorCoordinates = if (anchorView != null) {
-            val anchorViewPosition = IntArray(2)
-            anchorView.getLocationOnScreen(anchorViewPosition)
+        val anchorCoordinates = when {
+            customAnchor != null -> customAnchor!!
+            anchorView != null -> {
+                val anchorViewPosition = IntArray(2)
+                anchorView.getLocationOnScreen(anchorViewPosition)
 
-            AnchorCoordinates(
-                anchorViewPosition[0] + anchorView.measuredWidth / 2,
-                anchorViewPosition[1] + anchorView.measuredHeight / 2
-            )
-        } else {
-            AnchorCoordinates(
+                AnchorCoordinates(
+                    anchorViewPosition[0] + anchorView.measuredWidth / 2,
+                    anchorViewPosition[1] + anchorView.measuredHeight / 2
+                )
+            }
+            else -> AnchorCoordinates(
                 hintOverlay!!.measuredWidth / 2,
                 hintOverlay!!.measuredHeight / 2
             )

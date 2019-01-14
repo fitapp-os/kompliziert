@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Kompliziertes Demo</string>
+    <string name="explanation">Tap on the screen to place or hide a hint. Use the option in the toolbar to toggle the
+        icon.
+    </string>
+    <string name="hint_title">Kompliziert</string>
+    <string name="hint_message">Lorem ipsum dolor sit amet, ad omnis assentior mediocritatem sed.</string>
+</resources>
