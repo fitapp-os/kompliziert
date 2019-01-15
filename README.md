@@ -54,3 +54,7 @@ And then include the dependency:
         implementation 'info.fitapp:kompliziert:1.0'
     }
 ```
+
+## Contributing
+
+You are welcome to contribute! Create a ticket, fork the repo, do your work in a new branch and create a pull request!

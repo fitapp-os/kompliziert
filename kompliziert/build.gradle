@@ -5,14 +5,14 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = "info.fitapp"
-version = "1.0"
+version = "1.1"
 
 android {
     compileSdkVersion 27
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 2
+        versionCode 3
         versionName version
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -44,8 +44,8 @@ bintray {
     pkg {
         repo = "maven"
         name = "kompliziert"
-        licenses = ["Apache-2.0"]
-        vcsUrl = "https://gitlab.fitapp.info/fitapp/android-libraries/kompliziert"
+        licenses = ["LGPL-3.0"]
+        vcsUrl = "https://github.com/fitapp-os/kompliziert"
         publish = true
     }
 }
@@ -55,11 +55,11 @@ install {
         pom {
             project {
                 packaging 'aar'
-                name 'Kompliziert explains your users make sense of your app using hints.'
+                name 'Kompliziert helps your users make sense of your app using hints.'
                 licenses {
                     license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        name 'GNU Lesser General Public License v3.0'
+                        url 'https://www.gnu.org/licenses/lgpl-3.0.en.html'
                     }
                 }
                 developers {
