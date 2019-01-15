@@ -51,7 +51,7 @@ And then include the dependency:
 
 ```groovy
     dependencies {
-        implementation 'info.fitapp:kompliziert:1.0'
+        implementation 'info.fitapp:kompliziert:1.1'
     }
 ```
 
