@@ -25,6 +25,7 @@ class Hint(
 
     companion object {
 
+        @JvmStatic
         fun withData(
             activity: Activity,
             anchorView: View?,
@@ -36,6 +37,7 @@ class Hint(
             return Hint(activity, anchorView, title, message, iconResource, pulsate)
         }
 
+        @JvmStatic
         fun withData(
             activity: Activity,
             anchorView: View?,
