@@ -7,6 +7,31 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = "info.fitapp"
 version = "1.1"
 
+ext {
+
+    bintrayRepo = "maven"
+    bintrayName = "kompliziert"
+
+    publishedGroupId = 'info.fitapp'
+    libraryName = 'kompliziert'
+    artifact = 'kompliziert'
+
+    libraryDescription = 'Kompliziert helps your users make sense of your app using hints.'
+
+    siteUrl = 'https://github.com/fitapp-os/kompliziert'
+    gitUrl = 'https://github.com/fitapp-os/kompliziert.git'
+
+    libraryVersion = version
+
+    developerId = 'fitapp'
+    developerName = 'Markus Deutsch'
+    developerEmail = 'markus.deutsch@fitapp.info'
+
+    licenseName = 'GNU Lesser General Public License v3.0'
+    licenseUrl = 'https://www.gnu.org/licenses/lgpl-3.0.en.html'
+    allLicenses = ["LGPL-3.0"]
+}
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -33,61 +58,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-
-    configurations = ['archives']
-    pkg {
-        repo = "maven"
-        name = "kompliziert"
-        licenses = ["LGPL-3.0"]
-        vcsUrl = "https://github.com/fitapp-os/kompliziert"
-        publish = true
-    }
-}
-
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                packaging 'aar'
-                name 'Kompliziert helps your users make sense of your app using hints.'
-                licenses {
-                    license {
-                        name 'GNU Lesser General Public License v3.0'
-                        url 'https://www.gnu.org/licenses/lgpl-3.0.en.html'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'fitapp'
-                        name 'Markus Deutsch'
-                        email 'markus.deutsch@fitapp.info'
-                    }
-                }
-            }
-        }
-    }
-}
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-task findConventions << {
-    println project.getConvention()
+if (project.rootProject.file('local.properties').exists()) {
+    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/install.gradle'
+    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/bintray.gradle'
 }
