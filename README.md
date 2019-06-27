@@ -36,7 +36,7 @@ A hint can be shown and hidden using the respective methods.
     hint.hide()
 ```
 
-The [demo](demo) module shows an example of how *Kompliziert* works.
+The [demo](demo) module shows an example of how *Kompliziert* works, including how to change the background of the icon.
 
 ## Installation
 
@@ -51,7 +51,7 @@ And then include the dependency:
 
 ```groovy
     dependencies {
-        implementation 'info.fitapp:kompliziert:1.1'
+        implementation 'info.fitapp:kompliziert:2.0.0'
     }
 ```
 
