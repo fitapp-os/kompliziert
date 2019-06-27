@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="hintBackgroundColor">#83000000</color>
-    <color name="hintIconBackgroundGradientStart">#a13dff</color>
-    <color name="hintIconBackgroundGradientEnd">#460087</color>
+    <color name="hintIconBackgroundGradientStart">@color/colorPrimary</color>
+    <color name="hintIconBackgroundGradientEnd">@color/colorPrimaryDark</color>
 </resources>

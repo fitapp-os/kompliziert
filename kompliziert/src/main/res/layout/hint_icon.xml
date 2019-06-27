@@ -7,6 +7,7 @@
         android:layout_height="@dimen/hint_icon_dimen">
 
     <ImageView
+            android:id="@+id/ivHintIconBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/hint_default_icon_background"/>

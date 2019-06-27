@@ -1,12 +1,13 @@
 package info.fitapp.demo
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import androidx.appcompat.app.AppCompatActivity
 import info.fitapp.kompliziert.AnchorCoordinates
 import info.fitapp.kompliziert.Hint
+import info.fitapp.kompliziert.HintStyle
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -55,5 +56,8 @@ class MainActivity : AppCompatActivity() {
     private fun getFreshHint(): Hint {
         val icon = if (showIcon) R.drawable.ic_star_white_38dp else null
         return Hint.withData(this, null, R.string.hint_title, R.string.hint_message, icon, true)
+            .apply {
+                hintStyle = HintStyle().apply { iconBackground = R.drawable.hint_background }
+            }
     }
 }

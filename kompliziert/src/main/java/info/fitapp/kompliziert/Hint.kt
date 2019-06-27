@@ -50,6 +50,7 @@ class Hint(
         }
     }
 
+    var hintStyle = HintStyle()
     var isShowing = false
     var customAnchor: AnchorCoordinates? = null
 
@@ -128,7 +129,6 @@ class Hint(
         hintOverlay?.startAnimation(fadeIn)
     }
 
-
     /*
      * Position the hint icon.
      * If the bubble will be attached to the bottom, the icon needs to be aligned to the top and positioned with
@@ -164,6 +164,9 @@ class Hint(
             // Set the icon resource.
             val hintIcon = it.findViewById<ImageView>(R.id.ivHintIcon)
             hintIcon.setImageResource(iconResource)
+
+            // Customize the background.
+            it.findViewById<ImageView>(R.id.ivHintIconBackground).setImageResource(hintStyle.iconBackground)
 
             // Pulsate
             if (pulsate) {
@@ -229,8 +232,6 @@ class Hint(
             } else {
                 bubbleLayoutParams.addRule(RelativeLayout.ABOVE, iconContainer.id)
             }
-
-
 
             return bubbleLayout
         }
