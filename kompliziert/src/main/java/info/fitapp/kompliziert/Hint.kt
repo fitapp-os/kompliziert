@@ -2,6 +2,7 @@ package info.fitapp.kompliziert
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
@@ -9,13 +10,12 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import kotlin.math.roundToInt
 
 
 class Hint(
-    private val activity: AppCompatActivity,
+    private val activity: Activity,
     private val anchorView: View?,
     private val title: String?,
     private val message: String?,
@@ -26,7 +26,7 @@ class Hint(
     companion object {
 
         fun withData(
-            activity: AppCompatActivity,
+            activity: Activity,
             anchorView: View?,
             title: String,
             message: String,
@@ -37,7 +37,7 @@ class Hint(
         }
 
         fun withData(
-            activity: AppCompatActivity,
+            activity: Activity,
             anchorView: View?,
             title: Int,
             message: Int,
