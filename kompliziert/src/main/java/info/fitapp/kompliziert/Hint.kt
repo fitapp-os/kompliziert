@@ -2,8 +2,6 @@ package info.fitapp.kompliziert
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
-import android.app.Activity
-import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
@@ -11,11 +9,13 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import kotlin.math.roundToInt
 
 
 class Hint(
-    private val activity: Activity,
+    private val activity: AppCompatActivity,
     private val anchorView: View?,
     private val title: String?,
     private val message: String?,
@@ -26,7 +26,7 @@ class Hint(
     companion object {
 
         fun withData(
-            activity: Activity,
+            activity: AppCompatActivity,
             anchorView: View?,
             title: String,
             message: String,
@@ -37,7 +37,7 @@ class Hint(
         }
 
         fun withData(
-            activity: Activity,
+            activity: AppCompatActivity,
             anchorView: View?,
             title: Int,
             message: Int,
@@ -208,9 +208,9 @@ class Hint(
 
         // Hide the pointer that is on the opposite side of the icon.
         bubbleContainer.findViewById<ImageView>(R.id.ivBubbleTipBottom).visibility =
-                if (attachToBottom) View.GONE else View.VISIBLE
+            if (attachToBottom) View.GONE else View.VISIBLE
         bubbleContainer.findViewById<ImageView>(R.id.ivBubbleTipTop).visibility =
-                if (attachToBottom) View.VISIBLE else View.GONE
+            if (attachToBottom) View.VISIBLE else View.GONE
 
     }
 
