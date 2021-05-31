@@ -44,14 +44,14 @@ In your `build.gradle` add the following repository:
 
 ```groovy
     maven { 
-        url 'https://dl.bintray.com/fitapp/maven' 
+        url 'https://jitpack.io'
     }
 ```
 And then include the dependency:
 
 ```groovy
     dependencies {
-        implementation 'info.fitapp:kompliziert:2.0.1'
+	    implementation 'com.github.fitapp-os:kompliziert:v2.0.1'
     }
 ```
 
