@@ -1,64 +1,42 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
-
-group = "info.fitapp"
-version = "2.0.1"
-
-ext {
-
-    bintrayRepo = "maven"
-    bintrayName = "kompliziert"
-
-    publishedGroupId = 'info.fitapp'
-    libraryName = 'kompliziert'
-    artifact = 'kompliziert'
-
-    libraryDescription = 'Kompliziert helps your users make sense of your app using hints.'
-
-    siteUrl = 'https://github.com/fitapp-os/kompliziert'
-    gitUrl = 'https://github.com/fitapp-os/kompliziert.git'
-
-    libraryVersion = version
-
-    developerId = 'fitapp'
-    developerName = 'Markus Deutsch'
-    developerEmail = 'markus.deutsch@fitapp.info'
-
-    licenseName = 'GNU Lesser General Public License v3.0'
-    licenseUrl = 'https://www.gnu.org/licenses/lgpl-3.0.en.html'
-    allLicenses = ["LGPL-3.0"]
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
 }
 
+group = "info.fitapp"
+version = "2.0.2"
+
 android {
-    compileSdkVersion 29
+    namespace 'info.fitapp.kompliziert'
+    compileSdk 36
+
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 5
-        versionName version
+        minSdk 21
+        targetSdk 36
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = '11'
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-}
-
-if (project.rootProject.file('local.properties').exists()) {
-    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/install.gradle'
-    apply from: 'https://raw.githubusercontent.com/wajahatkarim3/JCenter-Gradle-Scripts/master/bintray.gradle'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }

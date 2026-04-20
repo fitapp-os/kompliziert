@@ -50,6 +50,24 @@ class Hint(
                 return Hint(this, anchorView, getString(title), getString(message), iconResource, pulsate)
             }
         }
+
+        @JvmStatic
+        @Volatile
+        var visibleHintCount: Int = 0
+            private set
+
+        @JvmStatic
+        fun isAnyHintVisible(): Boolean = visibleHintCount > 0
+
+        @JvmStatic
+        private fun onHintShown() {
+            visibleHintCount += 1
+        }
+
+        @JvmStatic
+        private fun onHintHidden() {
+            visibleHintCount = (visibleHintCount - 1).coerceAtLeast(0)
+        }
     }
 
     var hintStyle = HintStyle()
@@ -272,22 +290,32 @@ class Hint(
     }
 
     fun show() {
+        if (isShowing) return
+
         with(activity) {
             val rootLayout = findViewById<FrameLayout>(android.R.id.content)
             hintOverlay = LayoutInflater.from(this).inflate(R.layout.hint_overlay, rootLayout, false) as RelativeLayout?
             rootLayout.addView(hintOverlay)
             hintOverlay?.setOnClickListener { hide() }
             isShowing = true
+            onHintShown()
 
             hintOverlay!!.viewTreeObserver.addOnGlobalLayoutListener(this@Hint)
         }
     }
 
     fun hide() {
+        if (!isShowing) return
+
         with(activity) {
             isShowing = false
             val rootLayout = findViewById<FrameLayout>(android.R.id.content)
-            val hintOverlay: View = rootLayout.findViewById(R.id.hintOverlay)
+            val currentHintOverlay: View? = rootLayout.findViewById(R.id.hintOverlay)
+
+            if (currentHintOverlay == null) {
+                onHintHidden()
+                return
+            }
 
             val fadeOut = AlphaAnimation(1f, 0f)
             fadeOut.interpolator = AccelerateInterpolator()
@@ -299,7 +327,8 @@ class Hint(
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
-                    rootLayout.removeView(hintOverlay)
+                    rootLayout.removeView(currentHintOverlay)
+                    onHintHidden()
                 }
 
                 override fun onAnimationStart(animation: Animation?) {
@@ -307,8 +336,8 @@ class Hint(
 
             })
 
-            hintOverlay.animation = fadeOut
-            hintOverlay.startAnimation(fadeOut)
+            currentHintOverlay.animation = fadeOut
+            currentHintOverlay.startAnimation(fadeOut)
         }
     }
 
